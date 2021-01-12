@@ -148,21 +148,21 @@ rename(BeamBin0, Name) ->
     update_form_size(BeamBin).
 
 %% Replace the first atom of the atom table with the new name
-get_module_name(<<"Atom", _CnkSz:32, _NumAtoms:32, 
+get_module_name(<<"AtU8", _CnkSz:32, _NumAtoms:32, 
 		 NameSz:8, Name:NameSz/binary, _Rest/binary>>) ->
     binary_to_atom(Name, latin1);
 get_module_name(<<_, Rest/binary>>) ->
     get_module_name(Rest).
 
 %% Replace the first atom of the atom table with the new name
-replace_in_atab(<<"Atom", CnkSz0:32, Cnk:CnkSz0/binary, Rest/binary>>, Name) ->
+replace_in_atab(<<"AtU8", CnkSz0:32, Cnk:CnkSz0/binary, Rest/binary>>, Name) ->
     <<NumAtoms:32, NameSz0:8, _Name0:NameSz0/binary, CnkRest/binary>> = Cnk,
     NumPad0 = num_pad_bytes(CnkSz0),
     <<_:NumPad0/unit:8, NextCnks/binary>> = Rest,
     NameSz = size(Name),
     CnkSz = CnkSz0 + NameSz - NameSz0,
     NumPad = num_pad_bytes(CnkSz),
-    <<"Atom", CnkSz:32, NumAtoms:32, NameSz:8, Name:NameSz/binary,
+    <<"AtU8", CnkSz:32, NumAtoms:32, NameSz:8, Name:NameSz/binary,
      CnkRest/binary, 0:NumPad/unit:8, NextCnks/binary>>;
 replace_in_atab(<<C, Rest/binary>>, Name) ->
     <<C, (replace_in_atab(Rest, Name))/binary>>.
